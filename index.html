@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Striker IO | Cyberpunk Shooter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Rajdhani', sans-serif;
+            background: #020617;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        .cyber-border {
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 15px #00f2ff, inset 0 0 15px #00f2ff;
+        }
+
+        .cyber-text {
+            color: #00f2ff;
+            text-shadow: 0 0 10px #00f2ff;
+        }
+
+        .neon-pink {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .neon-red {
+            color: #ff0033;
+            text-shadow: 0 0 10px #ff0033;
+        }
+
+        #ui-overlay {
+            pointer-events: none;
+        }
+
+        #start-screen {
+            pointer-events: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="h-full relative">
+    <!-- Start Screen -->
+    <div id="start-screen"
+        class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/90 backdrop-blur-xl">
+        <div class="cyber-border bg-slate-900/80 p-10 rounded-xl max-w-md w-full text-center">
+            <h1 class="text-4xl font-bold cyber-text font-['Orbitron'] mb-8 tracking-widest uppercase">Connect to Grid
+            </h1>
+            <form id="join-form" class="space-y-6">
+                <div>
+                    <label class="block text-xs uppercase text-slate-400 mb-2 tracking-widest">Identify Yourself</label>
+                    <input type="text" id="nickname" maxlength="15" required placeholder="NICKNAME_HERE"
+                        class="w-full bg-slate-950 border-2 border-slate-700 p-3 text-cyan-400 font-mono focus:border-cyan-400 outline-none transition-all">
+                </div>
+                <button type="submit"
+                    class="w-full bg-cyan-500/20 cyber-border py-4 font-['Orbitron'] font-bold text-cyan-400 hover:bg-cyan-500/40 transition-all uppercase tracking-[0.2em]">
+                    Initialize Core
+                </button>
+            </form>
+            <div class="mt-8 pt-6 border-t border-slate-800">
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-2">Personal Records</div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-400">BEST_KILLS:</span>
+                    <span id="best-score" class="neon-pink font-bold">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="ui-overlay" class="absolute inset-0 flex flex-col justify-between p-6 z-10 hidden">
+        <header class="flex justify-between items-start">
+            <div class="cyber-border bg-slate-900/80 p-4 backdrop-blur-md rounded-lg min-w-[200px]">
+                <h1 class="text-xl font-bold cyber-text font-['Orbitron'] tracking-widest text-left" id="hud-name">USER
+                </h1>
+                <div class="flex justify-between mt-2">
+                    <span class="text-[10px] text-slate-400 uppercase tracking-tighter self-center">Combat
+                        Efficiency:</span>
+                    <span class="neon-pink font-bold text-lg"><span id="hud-kills">0</span> KILLS</span>
+                </div>
+                <div class="w-full h-1 bg-slate-800 mt-2 relative">
+                    <div id="hud-hp-bar" class="absolute left-0 top-0 h-full bg-cyan-400 shadow-[0_0_10px_#00f2ff]"
+                        style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="cyber-border bg-slate-900/80 p-4 backdrop-blur-md rounded-lg text-right">
+                <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Grid Load</div>
+                <div id="player-count" class="text-2xl font-bold neon-pink">0</div>
+            </div>
+        </header>
+
+        <footer class="flex justify-between items-end">
+            <div class="cyber-border bg-slate-900/80 p-4 backdrop-blur-md rounded-lg">
+                <div class="text-[10px] text-slate-400 uppercase tracking-widest mb-2 font-bold">Directives</div>
+                <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                        <span class="cyber-text text-sm font-bold font-mono">[WASD]</span>
+                        <span class="text-[9px] text-slate-500 uppercase tracking-tighter">Locomotion</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span class="cyber-text text-sm font-bold font-mono">[M1]</span>
+                        <span class="text-[9px] text-slate-500 uppercase tracking-tighter">Engagement</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-[10px] text-slate-600 uppercase tracking-[0.3em]">
+                SYS_VER: 2026.02.Combat // DEEPMIND_EDGE
+            </div>
+        </footer>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
