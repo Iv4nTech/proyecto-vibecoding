@@ -62,7 +62,10 @@ window.addEventListener('keyup', (e) => {
 // Mouse shooting
 window.addEventListener('mousedown', (e) => {
     if (myId && players[myId]) {
-        socket.emit('shoot', { x: e.clientX, y: e.clientY });
+        const p = players[myId];
+        const worldX = e.clientX + p.x - canvas.width / 2;
+        const worldY = e.clientY + p.y - canvas.height / 2;
+        socket.emit('shoot', { x: worldX, y: worldY });
     }
 });
 
@@ -110,8 +113,9 @@ if (fireBtn) {
     fireBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         if (myId && players[myId]) {
-            // Auto-target nearest enemy or center of screen? Let's just shoot forward for now
-            socket.emit('shoot', { x: canvas.width / 2, y: canvas.height / 2 - 100 });
+            const p = players[myId];
+            // Shoot in front of the player (using screen center-ish but offset)
+            socket.emit('shoot', { x: p.x, y: p.y - 100 });
         }
     });
 }
@@ -166,6 +170,14 @@ socket.on('death', (kills) => {
 function draw() {
     ctx.fillStyle = 'rgba(2, 6, 23, 0.4)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const me = players[myId];
+    const camX = me ? me.x : canvas.width / 2;
+    const camY = me ? me.y : canvas.height / 2;
+
+    ctx.save();
+    ctx.translate(-camX + canvas.width / 2, -camY + canvas.height / 2);
+
     drawGrid();
 
     enemies.forEach(e => { if (e.hp > 0) drawEnemy(e); });
@@ -182,6 +194,8 @@ function draw() {
         drawPlayer(players[id], id === myId);
     }
 
+    ctx.restore();
+
     requestAnimationFrame(draw);
 }
 
@@ -189,12 +203,19 @@ function drawGrid() {
     ctx.strokeStyle = 'rgba(0, 242, 255, 0.05)';
     ctx.lineWidth = 1;
     const gridSize = 50;
-    for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    const worldSize = 3000;
+
+    for (let x = 0; x <= worldSize; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, worldSize); ctx.stroke();
     }
-    for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    for (let y = 0; y <= worldSize; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(worldSize, y); ctx.stroke();
     }
+
+    // World border
+    ctx.strokeStyle = 'rgba(0, 242, 255, 0.2)';
+    ctx.lineWidth = 5;
+    ctx.strokeRect(0, 0, worldSize, worldSize);
 }
 
 function drawEnemy(e) {

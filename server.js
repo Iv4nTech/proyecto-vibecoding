@@ -13,8 +13,8 @@ app.use(express.static(__dirname));
 const players = {};
 const bullets = [];
 const enemies = [];
-const WORLD_WIDTH = 1000;
-const WORLD_HEIGHT = 1000;
+const WORLD_WIDTH = 3000;
+const WORLD_HEIGHT = 3000;
 
 // Initialize enemies
 function spawnEnemy() {
